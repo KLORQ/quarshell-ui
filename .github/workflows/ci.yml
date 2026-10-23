@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: quarshell-ui
+      - uses: actions/checkout@v4
+        with:
+          repository: KLORQ/quarshell-proto
+          ref: v0.2.6
+          path: quarshell-proto
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            quarshell-ui/package-lock.json
+            quarshell-proto/typescript/package-lock.json
+      - name: Build protocol client
+        run: |
+          npm ci --prefix quarshell-proto/typescript
+          npm run build --prefix quarshell-proto/typescript
+      - name: Check and build UI
+        run: |
+          npm ci --prefix quarshell-ui
+          npm run check --prefix quarshell-ui
+          npm run build --prefix quarshell-ui
+      - name: Install Chrome
+        working-directory: quarshell-ui
+        run: npx playwright install --with-deps chrome
+      - name: Browser tests
+        working-directory: quarshell-ui
+        run: npm run test:e2e

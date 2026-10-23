@@ -1,0 +1,12 @@
+**
+!quarshell-proto/
+!quarshell-proto/typescript/
+!quarshell-proto/typescript/**
+!quarshell-ui/
+!quarshell-ui/**
+**/node_modules/
+**/dist/
+**/test-results/
+**/playwright-report/
+**/.git/
+**/*.tsbuildinfo
